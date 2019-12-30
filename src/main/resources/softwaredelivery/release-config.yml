@@ -1,0 +1,8 @@
+# Detalhes da versão a ser liberada
+---
+title: v1.0.457
+apiKey: 9d8cbd9a-4b3bab28-9a62ab8a-3cfff4a9
+releaseNotesFile: release-notes.md
+buildDirectory: target
+artifacts:
+  - softwaredelivery-maven-plugin-0.0.1-SNAPSHOT.jar
