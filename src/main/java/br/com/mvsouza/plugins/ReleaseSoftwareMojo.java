@@ -41,9 +41,9 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            System.out.println("*********************************************************");
-            System.out.println("************* SOFTWARE DELIVERY PLUGIN ******************");
-            System.out.println("*********************************************************");
+            getLog().info("*********************************************************");
+            getLog().info("************* SOFTWARE DELIVERY PLUGIN ******************");
+            getLog().info("*********************************************************");
 
             ReleaseConfig config = parseReleaseDetailsFile();
             ServiceClient client = new ServiceClient(config);
@@ -61,7 +61,7 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
 
             client.releaseVersion(config, artifact, releaseNotesStr);
         } catch (Exception e) {
-            getLog().error("Erro fatal ao gerar a release.", e);
+            getLog().error("Error while releasing version.", e);
         }
 
     }
@@ -80,7 +80,7 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
         return pathToResource.toFile();
     }
 
-    public static String compress(ReleaseConfig config, String dirPath) {
+    public String compress(ReleaseConfig config, String dirPath) {
         final Path sourceDir = Paths.get(dirPath);
         String zipFileName = sourceDir.resolve(config.getTitle() + ".zip").toString();
         List<String> art = Arrays.asList(config.getArtifacts());
@@ -108,7 +108,7 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
             });
             outputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            getLog().error("Error while compressing files.", e);
         }
 
         return zipFileName;
