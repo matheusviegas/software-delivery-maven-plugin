@@ -1,6 +1,7 @@
 package br.com.mvsouza.plugins.beansws;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public class Project {
     private String slug;
     private String apiKey;
     private String visibility;
-    private List<Version> versions;
+    private List<Version> versions = new ArrayList<>();
 
     public Project() {
     }
@@ -75,6 +76,11 @@ public class Project {
 
     public void setVersions(List<Version> versions) {
         this.versions = versions;
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" + "id=" + id + ", title=" + title + ", description=" + description + ", slug=" + slug + ", apiKey=" + apiKey + ", visibility=" + visibility + ", versions=" + versions + '}';
     }
 
 }

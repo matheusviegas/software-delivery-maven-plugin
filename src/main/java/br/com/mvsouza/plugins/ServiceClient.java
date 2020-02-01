@@ -1,5 +1,6 @@
 package br.com.mvsouza.plugins;
 
+import br.com.mvsouza.plugins.beansws.ProjectContainer;
 import br.com.mvsouza.plugins.beansws.Project;
 import java.io.File;
 import javax.ws.rs.client.Client;
@@ -21,7 +22,7 @@ import org.glassfish.jersey.media.multipart.internal.MultiPartWriter;
 public class ServiceClient {
 
     private final Client client;
-    private final String BASE_URL = "http://localhost:3333/";
+    private final String BASE_URL = "http://localhost:8081/api";
 
     public ServiceClient(ReleaseConfig releaseConfig) {
         Configuration clientConfig = new ClientConfig(MultiPartWriter.class).register(new AuthenticationFilter(releaseConfig.getApiKey()));
@@ -48,8 +49,9 @@ public class ServiceClient {
         Response response = target.request().post(Entity.entity(multipart, multipart.getMediaType()));
 
         if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
-            Project project = response.readEntity(Project.class);
-            System.out.println(String.format("Versão [%s] publicada com sucesso no projeto [%s]", config.getTitle(), project.getTitle()));
+            ProjectContainer bean = response.readEntity(ProjectContainer.class);
+
+            System.out.println(String.format("Versão [%s] publicada com sucesso no projeto [%s]", config.getTitle(), bean.getData().getTitle()));
             return;
         }
 
