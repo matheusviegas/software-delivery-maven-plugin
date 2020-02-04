@@ -33,7 +33,8 @@ public class ServiceClient {
         WebTarget target = this.client.target(BASE_URL).path("project").path("apikey").path(apiKey);
         Invocation.Builder invocationBuilder = target.request("application/json;charset=UTF-8");
         Response response = invocationBuilder.get();
-        return response.readEntity(Project.class);
+
+        return response.readEntity(ProjectContainer.class).getData();
     }
 
     public void releaseVersion(ReleaseConfig config, File file, String changelog) {
