@@ -3,6 +3,7 @@ package br.com.mvsouza.plugins;
 import br.com.mvsouza.plugins.beansws.ProjectContainer;
 import br.com.mvsouza.plugins.beansws.Project;
 import java.io.File;
+import java.util.List;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -22,7 +23,7 @@ import org.glassfish.jersey.media.multipart.internal.MultiPartWriter;
 public class ServiceClient {
 
     private final Client client;
-    private final String BASE_URL = "http://localhost:8081/api";
+    private final String BASE_URL = "https://ci.mvsouza.com.br/api";
 
     public ServiceClient(ReleaseConfig releaseConfig) {
         Configuration clientConfig = new ClientConfig(MultiPartWriter.class).register(new AuthenticationFilter(releaseConfig.getApiKey()));
@@ -37,15 +38,16 @@ public class ServiceClient {
         return response.readEntity(ProjectContainer.class).getData();
     }
 
-    public void releaseVersion(ReleaseConfig config, File file, String changelog) {
+    public void releaseVersion(ReleaseConfig config, List<File> files, String changelog) {
         WebTarget target = client.target(BASE_URL).path("release");
-
-        FileDataBodyPart filePart = new FileDataBodyPart("file", file);
 
         FormDataMultiPart multipart = (FormDataMultiPart) new FormDataMultiPart()
                 .field("title", config.getTitle())
-                .field("changelog", changelog)
-                .bodyPart(filePart);
+                .field("changelog", changelog);
+
+        files.forEach((file) -> {
+            multipart.getBodyParts().add(new FileDataBodyPart("file", file));
+        });
 
         Response response = target.request().post(Entity.entity(multipart, multipart.getMediaType()));
 

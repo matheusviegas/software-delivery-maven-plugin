@@ -4,7 +4,7 @@
     <groupId>br.com.mvsouza.plugins</groupId>
     <artifactId>software-delivery-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>software-delivery-maven-plugin</name>
   
     <properties>
@@ -123,9 +123,10 @@
             <plugin>
                 <groupId>br.com.mvsouza.plugins</groupId>
                 <artifactId>software-delivery-maven-plugin</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>0.0.1</version>
                 <configuration>
-                    <msg>${test}</msg>
+                    <apiKey>XCTNE-I7ORY-2U36W-9IW2P</apiKey>
+                    <compress>true</compress>
                 </configuration>
             </plugin>
         </plugins>

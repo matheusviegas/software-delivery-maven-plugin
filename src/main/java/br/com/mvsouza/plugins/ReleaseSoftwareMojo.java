@@ -1,6 +1,7 @@
 package br.com.mvsouza.plugins;
 
 import br.com.mvsouza.plugins.beansws.Project;
+import br.com.mvsouza.plugins.util.ZipUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -38,6 +40,11 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
     private List<Resource> resources;
 
+    @Parameter(property = "apiKey", required = true)
+    private String apiKey;
+    @Parameter(property = "compress", required = true, defaultValue = "true")
+    private Boolean compress;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -45,7 +52,14 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
             getLog().info("************* SOFTWARE DELIVERY PLUGIN ******************");
             getLog().info("*********************************************************");
 
+            if (apiKey == null) {
+                getLog().error("Missing API Key");
+                return;
+            }
+
             ReleaseConfig config = parseReleaseDetailsFile();
+            config.setApiKey(apiKey);
+
             ServiceClient client = new ServiceClient(config);
 
             if (!validateVersionBeforeReleasing(config, client)) {
@@ -56,10 +70,24 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
             File releaseNotesFile = getFileFromResources("softwaredelivery", config.getReleaseNotesFile());
             String releaseNotesStr = releaseNotesFile != null ? new String(Files.readAllBytes(releaseNotesFile.toPath()), Charset.forName("UTF-8")) : "";
 
-            String p = project.getBasedir().toPath().resolve(config.getBuildDirectory()).toString();
-            File artifact = new File(compress(config, p));
+            String artifactDirectoryPath = project.getBasedir().toPath().resolve(config.getArtifactDirectory()).toString();
 
-            client.releaseVersion(config, artifact, releaseNotesStr);
+            List<File> filesToSend = new ArrayList<>();
+
+            if (compress) {
+                final Path sourceDir = Paths.get(artifactDirectoryPath);
+                String zipFileName = sourceDir.resolve(config.getTitle() + ".zip").toString();
+                ZipUtil.zipDirectory(config, sourceDir.toFile(), zipFileName);
+                filesToSend.add(new File(zipFileName));
+            } else {
+                final Path artifactBasePath = Paths.get(artifactDirectoryPath);
+
+                for (String artifactName : config.getArtifacts()) {
+                    filesToSend.add(artifactBasePath.resolve(artifactName).toFile());
+                }
+            }
+
+            client.releaseVersion(config, filesToSend, releaseNotesStr);
         } catch (Exception e) {
             getLog().error("Error while releasing version.", e);
         }
@@ -106,6 +134,9 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
                     return FileVisitResult.CONTINUE;
                 }
             });
+
+            outputStream.finish();
+            outputStream.flush();
             outputStream.close();
         } catch (IOException e) {
             getLog().error("Error while compressing files.", e);
@@ -118,7 +149,7 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
         StringBuilder sb = new StringBuilder();
         sb.append("Test String");
 
-        File artifact = project.getBasedir().toPath().resolve(config.getBuildDirectory()).resolve(config.getArtifacts()[0]).toFile();
+        File artifact = project.getBasedir().toPath().resolve(config.getArtifactDirectory()).resolve(config.getArtifacts()[0]).toFile();
 
         File zippedArtifact = new File(artifact.getParentFile().toPath().resolve(config.getTitle() + ".zip").toString());
 

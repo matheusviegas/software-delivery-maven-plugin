@@ -9,7 +9,7 @@ public class ReleaseConfig {
     private String title;
     private String apiKey;
     private String releaseNotesFile;
-    private String buildDirectory;
+    private String artifactDirectory;
     private String[] artifacts;
 
     public ReleaseConfig() {
@@ -39,12 +39,12 @@ public class ReleaseConfig {
         this.releaseNotesFile = releaseNotesFile;
     }
 
-    public String getBuildDirectory() {
-        return buildDirectory;
+    public String getArtifactDirectory() {
+        return artifactDirectory;
     }
 
-    public void setBuildDirectory(String buildDirectory) {
-        this.buildDirectory = buildDirectory;
+    public void setArtifactDirectory(String artifactDirectory) {
+        this.artifactDirectory = artifactDirectory;
     }
 
     public String[] getArtifacts() {

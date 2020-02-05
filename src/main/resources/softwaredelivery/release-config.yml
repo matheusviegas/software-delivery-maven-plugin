@@ -1,8 +1,8 @@
 # Detalhes da versão a ser liberada
 ---
-title: v1.2
-apiKey: SWCGE-FEV8C-1CC9X-7OC0O
+title: v1.5
 releaseNotesFile: release-notes.md
-buildDirectory: target
+artifactDirectory: target
 artifacts:
-  - software-delivery-maven-plugin-0.0.1-SNAPSHOT.jar
+  - software-delivery-maven-plugin-0.0.1.jar
+  - maven-archiver/pom.properties
