@@ -1,7 +1,6 @@
 package br.com.mvsouza.plugins;
 
 import br.com.mvsouza.plugins.beansws.Project;
-import br.com.mvsouza.plugins.util.ZipUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
@@ -75,10 +74,13 @@ public class ReleaseSoftwareMojo extends AbstractMojo {
             List<File> filesToSend = new ArrayList<>();
 
             if (compress) {
-                final Path sourceDir = Paths.get(artifactDirectoryPath);
+                /* final Path sourceDir = Paths.get(artifactDirectoryPath);
                 String zipFileName = sourceDir.resolve(config.getTitle() + ".zip").toString();
                 ZipUtil.zipDirectory(config, sourceDir.toFile(), zipFileName);
-                filesToSend.add(new File(zipFileName));
+                 */
+                String p = project.getBasedir().toPath().resolve(config.getArtifactDirectory()).toString();
+                File artifact = new File(compress(config, p));
+                filesToSend.add(artifact);
             } else {
                 final Path artifactBasePath = Paths.get(artifactDirectoryPath);
 
